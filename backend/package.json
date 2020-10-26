@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend implementation for QLDB bicycle licence demo",
+  "main": "functions/createQldbTable.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AWS-South-Wales-User-Group/qldb-bicycle-licence.git"
+  },
+  "author": "Matt Lewis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AWS-South-Wales-User-Group/qldb-bicycle-licence/issues"
+  },
+  "homepage": "https://github.com/AWS-South-Wales-User-Group/qldb-bicycle-licence#readme",
+  "dependencies": {
+    "@dazn/lambda-powertools-logger": "^1.24.1",
+    "amazon-qldb-driver-nodejs": "^2.0.0",
+    "aws-sdk": "^2.778.0",
+    "aws-xray-sdk-core": "^3.2.0",
+    "cfn-response-promise": "^1.1.0",
+    "ion-js": "^4.0.1",
+    "jsbi": "^3.1.4"
+  },
+  "devDependencies": {
+    "serverless-iam-roles-per-function": "^2.0.2",
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}

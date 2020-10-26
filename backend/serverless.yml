@@ -1,0 +1,89 @@
+service: qldb-bicycle-licence
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
+  tracing:
+    apiGateway: true
+    lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
+    LEDGER_NAME: qldb-simple-demo-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - qldb:SendCommand
+      Resource: arn:aws:qldb:#{AWS::Region}:#{AWS::AccountId}:ledger/qldb-bicycle-licence-${self:provider.stage}
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource: "*" # Restrict resource to minimum required
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-pseudo-parameters
+
+functions:
+  createQldbTable:
+    name: qldb-licence-table-${self:provider.stage}
+    handler: functions/createQldbTable.handler
+    memorySize: 256
+    timeout: 6
+    environment:
+      LICENCE_TABLE_NAME: BicycleLicence
+      EVENT_TABLE_NAME: Event
+      LEDGER_NAME: qldb-bicycle-licence-${self:provider.stage}
+
+  createQldbIndex:
+    name: qldb-licence-index-${self:provider.stage}
+    handler: functions/createQldbIndex.handler
+    memorySize: 256
+    timeout: 6
+    environment:
+      LEDGER_NAME: qldb-bicycle-licence-${self:provider.stage}
+      TABLE_NAME: BicycleLicence
+      INDEX_NAME_1: GUID
+      INDEX_NAME_2: Email
+      INDEX_NAME_3: Telephone
+
+
+resources:
+  Resources:
+    qldbLedger:
+      Type: AWS::QLDB::Ledger
+      Properties:
+        Name: qldb-bicycle-licence-${self:provider.stage}
+        DeletionProtection: false
+        PermissionsMode: ALLOW_ALL
+        Tags:
+          - 
+            Key: name
+            Value: qldb-bicycle-licence
+
+    qldbTable:
+      Type: Custom::qldbTable
+      DependsOn: qldbLedger
+      Properties:
+        ServiceToken: !GetAtt CreateQldbTableLambdaFunction.Arn
+        Version: 1.0  #change this to force redeploy
+
+    qldbIndex:
+      Type: Custom::qldbIndexes
+      DependsOn: qldbTable
+      Properties:
+        ServiceToken: !GetAtt CreateQldbIndexLambdaFunction.Arn
+        Version: 1.0  #change this to force redeploy 
+  
+  Outputs:
+    qldbBicycleLicenceLedger:
+      Value:
+        Ref: qldbLedger
+      Export:
+        Name: qldb-bicycle-licence-${self:provider.stage}
