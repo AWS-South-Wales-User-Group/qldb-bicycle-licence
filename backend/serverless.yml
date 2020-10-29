@@ -64,6 +64,14 @@ functions:
           path: /licences/{licenceid}
           method: get
 
+  getLicenceHistory:
+    name: get-bicycle-licence-history-${self:provider.stage}
+    handler: functions/get-licence-history.handler
+    events:
+      - http:
+          path: /licences/history/{licenceid}
+          method: get
+
   deleteLicence:
     name: delete-bicycle-licence-${self:provider.stage}
     handler: functions/delete-licence.handler
