@@ -1,0 +1,135 @@
+service: streams-dynmamodb
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  tracing:
+    apiGateway: true
+    lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
+    TABLE_NAME: 
+      Ref: bicycleLicenceLedgerTable
+  iamRoleStatements: # Grant privilege read from Kinesis work stream 
+  - Effect: Allow 
+    Action: 
+      - kinesis:GetRecords 
+      - kinesis:GetShardIterator 
+      - kinesis:DescribeStream 
+      - kinesis:ListStreams 
+      - kinesis:PutRecord 
+      - kinesis:PutRecords 
+    Resource: 
+      Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
+  - Effect: Allow
+    Action:
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource: 
+      Fn::GetAtt: [bicycleLicenceLedgerTable, Arn]
+  - Effect: "Allow"
+    Action:
+      - "xray:PutTraceSegments"
+      - "xray:PutTelemetryRecords"
+    Resource: "*"
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-pseudo-parameters
+
+functions:
+  qldbStreamsDynamoDB:
+    name: qldb-streams-dynamodb-${self:provider.stage}
+    handler: functions/qldb-streams-dynamodb.handler
+    events:
+      - stream:
+          type: kinesis
+          batchSize: 1
+          startingPosition: TRIM_HORIZON
+          maximumRetryAttempts: 10
+          enabled: true
+          arn:
+            Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
+
+  
+
+resources:
+  Resources:
+
+    licenceQldbStreamsDynamodb: 
+      Type: AWS::Kinesis::Stream
+      Properties: 
+        Name: QLDBBicycleLicence-dynamodb-${self:provider.stage}
+        ShardCount: 1
+    
+    QldbStreamsDynamoDBLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        TracingConfig:
+          Mode: "Active"
+    
+    bicycleLicenceLedgerTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Delete
+      Properties:
+        TableName: qldb-bicycle-licence-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: "pk"
+            AttributeType: S
+        KeySchema:
+          - AttributeName: "pk"
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    qldbStreamRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                - qldb.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: /
+        Policies:
+          - PolicyName: qldb-bicycle-dynamodb-policy-${self:provider.stage}
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 'kinesis:PutRecord**'
+                    - 'kinesis:DescribeStream'
+                    - 'kinesis:ListShards'
+                  Resource:
+                    Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
+        RoleName: qldb-bicycle-dynamodb-role-${self:provider.stage}
+
+    myQLDBStream:
+      Type: "AWS::QLDB::Stream"
+      DependsOn: qldbStreamRole
+      Properties:
+        InclusiveStartTime: "2020-05-29T00:00:00Z"
+        KinesisConfiguration:
+          AggregationEnabled: true
+          StreamArn: 
+            Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
+        LedgerName: !ImportValue qldb-bicycle-licence
+        RoleArn: 
+          Fn::GetAtt: [qldbStreamRole, Arn]
+        StreamName: qldb-bicycle-dynamodb-stream-${self:provider.stage}
+        Tags:
+          - Key: name
+            Value: qldb-bicycle-licence
