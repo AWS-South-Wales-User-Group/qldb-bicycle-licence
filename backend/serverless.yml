@@ -14,7 +14,7 @@ provider:
     lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
-    LEDGER_NAME: qldb-simple-demo-${self:provider.stage}
+    LEDGER_NAME: qldb-bicycle-licence-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action: 
@@ -31,6 +31,47 @@ plugins:
   - serverless-pseudo-parameters
 
 functions:
+
+  createLicence:
+    name: create-bicycle-licence-${self:provider.stage}
+    handler: functions/create-licence.handler
+    events:
+      - http:
+          path: /licences
+          method: post
+
+  updateLicence:
+    name: update-bicycle-licence-${self:provider.stage}
+    handler: functions/update-licence.handler
+    events:
+      - http:
+          path: /licences
+          method: put
+
+  updateContact:
+    name: update-bicycle-contact-${self:provider.stage}
+    handler: functions/update-contact.handler
+    events:
+      - http:
+          path: /licences/contact
+          method: put
+
+  getLicence:
+    name: get-bicycle-licence-${self:provider.stage}
+    handler: functions/get-licence.handler
+    events:
+      - http:
+          path: /licences/{licenceid}
+          method: get
+
+  deleteLicence:
+    name: delete-bicycle-licence-${self:provider.stage}
+    handler: functions/delete-licence.handler
+    events:
+      - http:
+          path: /licences
+          method: delete
+
   createQldbTable:
     name: qldb-licence-table-${self:provider.stage}
     handler: functions/createQldbTable.handler
@@ -86,4 +127,4 @@ resources:
       Value:
         Ref: qldbLedger
       Export:
-        Name: qldb-bicycle-licence-${self:provider.stage}
+        Name: qldb-bicycle-licence

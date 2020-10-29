@@ -6,6 +6,7 @@
 const Log = require('@dazn/lambda-powertools-logger');
 const response = require('cfn-response-promise');
 const { QldbDriver } = require('amazon-qldb-driver-nodejs');
+const qldbDriver = new QldbDriver(process.env.LEDGER_NAME);
 
 async function createTable(txn, tableName) {
   const statement = `CREATE TABLE ${tableName}`;
@@ -22,7 +23,6 @@ module.exports.handler = async (event, context) => {
     if (event.RequestType === 'Create') {
       Log.debug('Attempting to create QLDB table');
       try {
-        const qldbDriver = new QldbDriver(process.env.LEDGER_NAME);
         await qldbDriver.executeLambda(async (txn) => {
           await createTable(txn, process.env.LICENCE_TABLE_NAME);
           await createTable(txn, process.env.EVENT_TABLE_NAME);

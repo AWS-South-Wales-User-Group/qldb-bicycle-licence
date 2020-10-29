@@ -22,6 +22,7 @@
     "aws-sdk": "^2.778.0",
     "aws-xray-sdk-core": "^3.2.0",
     "cfn-response-promise": "^1.1.0",
+    "dateformat": "^3.0.3",
     "ion-js": "^4.0.1",
     "jsbi": "^3.1.4"
   },

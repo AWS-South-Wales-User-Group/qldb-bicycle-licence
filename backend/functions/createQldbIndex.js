@@ -6,6 +6,8 @@ const Log = require('@dazn/lambda-powertools-logger');
 const response = require('cfn-response-promise');
 const { QldbDriver } = require('amazon-qldb-driver-nodejs');
 
+const qldbDriver = new QldbDriver(process.env.LEDGER_NAME);
+
 async function createIndex(txn, tableName, indexAttribute) {
   const statement = `CREATE INDEX on ${tableName} (${indexAttribute})`;
   return txn.execute(statement).then((result) => {
@@ -19,7 +21,6 @@ module.exports.handler = async (event, context) => {
     if (event.RequestType === 'Create') {
       Log.debug(`QLDB Index create request received:\n${JSON.stringify(event, null, 2)}`);
       try {
-        const qldbDriver = new QldbDriver(process.env.LEDGER_NAME);
         await qldbDriver.executeLambda(async (txn) => {
           Promise.all([
             createIndex(txn, process.env.TABLE_NAME, process.env.INDEX_NAME_1),
