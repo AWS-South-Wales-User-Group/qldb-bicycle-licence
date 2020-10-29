@@ -1,0 +1,25 @@
+{
+  "name": "streams-dynmamodb",
+  "version": "1.0.0",
+  "description": "QLDB streams integration to DynamoDB",
+  "main": "functions/qldb-streams-dynamodb.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matt Lewis",
+  "license": "MIT",
+  "dependencies": {
+    "@dazn/lambda-powertools-logger": "^1.24.1",
+    "amazon-qldb-driver-nodejs": "^2.0.0",
+    "aws-kinesis-agg": "^4.1.2",
+    "aws-sdk": "^2.782.0",
+    "aws-xray-sdk": "^3.2.0",
+    "aws-xray-sdk-core": "^3.2.0",
+    "ion-js": "^4.0.1",
+    "jsbi": "^3.1.4"
+  },
+  "devDependencies": {
+    "serverless-iam-roles-per-function": "^2.0.2",
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}
