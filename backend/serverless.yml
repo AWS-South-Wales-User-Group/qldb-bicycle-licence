@@ -87,7 +87,6 @@ functions:
     timeout: 6
     environment:
       LICENCE_TABLE_NAME: BicycleLicence
-      EVENT_TABLE_NAME: Event
       LEDGER_NAME: qldb-bicycle-licence-${self:provider.stage}
 
   createQldbIndex:
