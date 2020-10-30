@@ -15,32 +15,6 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
     TABLE_NAME: 
       Ref: bicycleLicenceLedgerTable
-  iamRoleStatements: # Grant privilege read from Kinesis work stream 
-  - Effect: Allow 
-    Action: 
-      - kinesis:GetRecords 
-      - kinesis:GetShardIterator 
-      - kinesis:DescribeStream 
-      - kinesis:ListStreams 
-      - kinesis:PutRecord 
-      - kinesis:PutRecords 
-    Resource: 
-      Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
-  - Effect: Allow
-    Action:
-      - dynamodb:Query
-      - dynamodb:Scan
-      - dynamodb:GetItem
-      - dynamodb:PutItem
-      - dynamodb:UpdateItem
-      - dynamodb:DeleteItem
-    Resource: 
-      Fn::GetAtt: [bicycleLicenceLedgerTable, Arn]
-  - Effect: "Allow"
-    Action:
-      - "xray:PutTraceSegments"
-      - "xray:PutTelemetryRecords"
-    Resource: "*"
 
 plugins:
   - serverless-iam-roles-per-function
@@ -59,8 +33,33 @@ functions:
           enabled: true
           arn:
             Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
-
-  
+    iamRoleStatementsName: qldb-streams-dynamodb-role-${self:provider.stage}
+    iamRoleStatements: # Grant privilege read from Kinesis work stream 
+    - Effect: Allow 
+      Action: 
+        - kinesis:GetRecords 
+        - kinesis:GetShardIterator 
+        - kinesis:DescribeStream 
+        - kinesis:ListStreams 
+        - kinesis:PutRecord 
+        - kinesis:PutRecords 
+      Resource: 
+        Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 
+        Fn::GetAtt: [bicycleLicenceLedgerTable, Arn]
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource: "*"
 
 resources:
   Resources:
