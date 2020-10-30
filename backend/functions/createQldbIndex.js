@@ -27,7 +27,7 @@ module.exports.handler = async (event, context) => {
             createIndex(txn, process.env.TABLE_NAME, process.env.INDEX_NAME_2),
             createIndex(txn, process.env.TABLE_NAME, process.env.INDEX_NAME_3),
           ]);
-        }, () => Log.info('Retrying due to OCC conflict...'));
+        });
       } catch (e) {
         Log.error(`Unable to connect: ${e}`);
         throw e;

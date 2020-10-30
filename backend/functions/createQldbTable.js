@@ -25,7 +25,7 @@ module.exports.handler = async (event, context) => {
       try {
         await qldbDriver.executeLambda(async (txn) => {
           await createTable(txn, process.env.LICENCE_TABLE_NAME);
-        }, () => Log.info('Retrying due to OCC conflict...'));
+        });
       } catch (e) {
         Log.error(`Unable to connect: ${e}`);
         throw e;
