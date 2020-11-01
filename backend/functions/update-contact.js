@@ -6,8 +6,10 @@ const Log = require('@dazn/lambda-powertools-logger');
 const dateFormat = require('dateformat');
 const { updateContact } = require('./helper/licence');
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
+const middy = require('@middy/core')
+const cors = require('@middy/http-cors')
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   const {
     licenceId, street, county, postcode
   } = JSON.parse(event.body);
@@ -37,3 +39,5 @@ module.exports.handler = async (event) => {
     };
   }
 };
+
+module.exports.handler = middy(handler).use(cors())

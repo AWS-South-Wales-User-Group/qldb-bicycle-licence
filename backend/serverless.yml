@@ -40,6 +40,7 @@ functions:
       - http:
           path: /licences
           method: post
+          cors: true
 
   updateLicence:
     name: update-bicycle-licence-${self:provider.stage}
@@ -48,6 +49,7 @@ functions:
       - http:
           path: /licences
           method: put
+          cors: true
 
   updateContact:
     name: update-bicycle-contact-${self:provider.stage}
@@ -56,6 +58,7 @@ functions:
       - http:
           path: /licences/contact
           method: put
+          cors: true
 
   getLicence:
     name: get-bicycle-licence-${self:provider.stage}
