@@ -1,0 +1,14 @@
+{
+  "name": "apigateway",
+  "version": "1.0.0",
+  "description": "Set up a shared API gateway",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^2.4.0"
+  }
+}

@@ -77,9 +77,9 @@ const createLicence = async (firstName, lastName, email, street, county, postcod
     // Check if the record already exists assuming email unique for demo
     const recordsReturned = await checkEmailUnique(txn, email);
     if (recordsReturned === 0) {
-      const licenceDoc = [{
+      const licenceDoc = {
         firstName, lastName, email, street, county, postcode, penaltyPoints: 0, events: event,
-      }];
+      };
       // Create the record. This returns the unique document ID in an array as the result set
       const result = await createBicycleLicence(txn, licenceDoc);
       const docIdArray = result.getResultList();
