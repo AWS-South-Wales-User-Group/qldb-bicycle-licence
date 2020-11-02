@@ -34,14 +34,18 @@ const deleteLicence = async (id, version) => {
 
 const getLicence = async (id) => {
   Log.debug(`In getLicence function with id ${id}`);
-  const licence = await dynamodb.get({
+
+  const params = {
     TableName: TABLE_NAME,
     Key: { pk: id },
-  });
+  };
+  const data = await dynamodb.get(params).promise();
+  const item = data.Item;
+
   return {
-    id: licence.Item.pk,
-    penaltyPoints: licence.Item.penaltyPoints,
-    postcode: licence.Item.postcode,
+    id: item.pk,
+    penaltyPoints: item.penaltyPoints,
+    postcode: item.postcode,
   };
 };
 

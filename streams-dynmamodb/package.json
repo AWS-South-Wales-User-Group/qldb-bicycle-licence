@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "@dazn/lambda-powertools-logger": "^1.24.1",
+    "@middy/core": "^1.4.0",
+    "@middy/http-cors": "^1.4.0",
     "amazon-qldb-driver-nodejs": "^2.0.0",
     "aws-kinesis-agg": "^4.1.2",
     "aws-sdk": "^2.782.0",
