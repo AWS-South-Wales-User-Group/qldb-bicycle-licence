@@ -5,6 +5,8 @@ import Licence from "./Licence";
 
 export default function History(props) {
   const [response, setResponse] = useState([]);
+  const [error, setError] = useState();
+
   const [licenceId, setLicenceId] = useState("");
 
   const routeProps = {
@@ -14,11 +16,11 @@ export default function History(props) {
   };
 
   useEffect(() => {
-    if (routeProps.location.state.licenceId) {
+    if (routeProps.location.state) {
       setLicenceId(routeProps.location.state.licenceId);
       getHistory(routeProps.location.state.licenceId);
     }
-  }, [routeProps.location.state.licenceId]);
+  }, [routeProps.location]);
 
   function getHistory(licenceid) {
     const apiName = "ApiGatewayRestApi";
@@ -32,14 +34,17 @@ export default function History(props) {
           );
         });
         setResponse(sortedResponse);
+        setError(null);
       })
       .catch((error) => {
-        console.log(error.response);
+        setError(error.response);
+        setResponse([]);
       });
   }
 
   function handleSubmit(evt) {
     evt.preventDefault();
+    getHistory(licenceId);
   }
 
   return (
@@ -56,37 +61,48 @@ export default function History(props) {
             placeholder='Enter Licence ID'
           />
           <InputGroup.Append>
-            <Button variant='outline-secondary'>Search</Button>
+            <Button variant='outline-secondary' type='submit'>
+              Search
+            </Button>
           </InputGroup.Append>
         </InputGroup>
       </Form>
-
-      <Card border='light'>
-        <Card.Body className='mt-0'>
-          <Licence licenceId={routeProps.location.state.licenceId} />
-        </Card.Body>
-      </Card>
-      <h5 className='mt-2'>Events</h5>
-      <Table striped bordered hover size='sm' className='mt-3'>
-        <thead>
-          <tr>
-            <th>Version</th>
-            <th>Event Name</th>
-            <th>Event Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {response.map((value, index) => {
-            return (
-              <tr key={index}>
-                <td>{value.metadata.version}</td>
-                <td>{value.data.events.eventName}</td>
-                <td>{value.data.events.eventDate}</td>
+      {error ? (
+        <Card className='text-center mt-4'>
+          <Card.Body className='mt-0'>
+            <h4>{error.data.detail}</h4>{" "}
+          </Card.Body>
+        </Card>
+      ) : (
+        <>
+          <Card border='light'>
+            <Card.Body className='mt-0'>
+              <Licence licenceId={licenceId} />
+            </Card.Body>
+          </Card>
+          <h5 className='mt-2'>Events</h5>
+          <Table striped bordered hover size='sm' className='mt-3'>
+            <thead>
+              <tr>
+                <th>Version</th>
+                <th>Event Name</th>
+                <th>Event Date</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+            </thead>
+            <tbody>
+              {response.map((value, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{value.metadata.version}</td>
+                    <td>{value.data.events.eventName}</td>
+                    <td>{value.data.events.eventDate}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </>
+      )}
     </>
   );
 }
