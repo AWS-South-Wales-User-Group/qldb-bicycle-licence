@@ -196,8 +196,7 @@ const updateLicence = async (licenceId, points, eventInfo) => {
     } else {
       const originalLicence = JSON.stringify(resultList[0]);
       const newLicence = JSON.parse(originalLicence);
-      const updatedPoints = newLicence.penaltyPoints + points;
-
+      const updatedPoints = parseInt(parseInt(newLicence.penaltyPoints)  + parseInt(points));
 
       await addPointsUpdatedEvent(txn, licenceId, updatedPoints, eventInfo);
       licence = {

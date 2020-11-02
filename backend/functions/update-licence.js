@@ -1,13 +1,15 @@
 const Log = require('@dazn/lambda-powertools-logger');
 const dateFormat = require('dateformat');
 const { updateLicence } = require('./helper/licence');
+const middy = require('@middy/core')
+const cors = require('@middy/http-cors')
 /*
  * Lambda function that implements the update licence functionality
  */
 
 const LicenceIntegrityError = require('./lib/LicenceIntegrityError');
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   const { licenceId, points } = JSON.parse(event.body);
   Log.debug(`In the update licence handler with licenceId ${licenceId} and points ${points}`);
   let eventInfo;
@@ -38,3 +40,5 @@ module.exports.handler = async (event) => {
     };
   }
 };
+
+module.exports.handler = middy(handler).use(cors())

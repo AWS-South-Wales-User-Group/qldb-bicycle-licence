@@ -4,8 +4,10 @@
 const Log = require('@dazn/lambda-powertools-logger');
 const { getLicenceHistory } = require('./helper/licence');
 const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
+const middy = require('@middy/core')
+const cors = require('@middy/http-cors')
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   const { licenceid } = event.pathParameters;
   Log.debug(`In the get-licence-history handler with licenceid ${licenceid}`);
 
@@ -33,3 +35,5 @@ module.exports.handler = async (event) => {
     };
   }
 };
+
+module.exports.handler = middy(handler).use(cors())
