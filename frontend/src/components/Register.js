@@ -47,7 +47,7 @@ export default function Register() {
       create(evt);
     }
   }
-  
+
   function create(evt) {
     const apiName = "ApiGatewayRestApi";
     const path = "/licences";
