@@ -12,16 +12,19 @@ const handler = async (event) => {
   Log.debug(`In the es-fuzzy-search handler with lastname ${lastname}`);
 
   try {
+
     const doc = {
       "query": {
-        "match": {
-          "lastName": lastname
+        "wildcard": {
+          "lastName": {
+            "value": lastname + '*'
+          }
         }
       }
-    };
+    }
 
     response = await sendRequest({
-      httpMethod: 'GET',
+      httpMethod: 'POST',
       requestPath: `licence/_search`,
       payload: doc,
     });
