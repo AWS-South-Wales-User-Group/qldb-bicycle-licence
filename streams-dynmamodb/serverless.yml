@@ -65,6 +65,26 @@ functions:
         - "xray:PutTelemetryRecords"
       Resource: "*"
 
+  DynamoDBGetLicence:
+    name: dynamodb-get-licence-${self:provider.stage}
+    handler: functions/dynamodb-search.handler
+    events:
+      - http:
+          path: /dynamodb/{licenceid}
+          method: get
+    iamRoleStatementsName: dynamodb-get-licence-${self:provider.stage}
+    iamRoleStatements: # Grant privilege read from Kinesis work stream 
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+      Resource: 
+        Fn::GetAtt: [bicycleLicenceLedgerTable, Arn]
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource: "*"
+
 resources:
   Resources:
 
