@@ -1,0 +1,293 @@
+service: streams-es
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  stackName: ${self:service}
+  tracing:
+    lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-cloudformation-sub-variables
+  - serverless-webpack
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
+    includeModules: false   # Node modules configuration for packaging
+    packager: 'npm'   # Packager that will be used to package your external modules
+
+functions:
+  streamHandler:
+    name: qldb-streams-es-${self:provider.stage}
+    handler: functions/qldb-streams-es.handler
+    environment:
+      ELASTICSEARCH_DOMAIN: !GetAtt ElasticSearch.DomainEndpoint
+      REGION: "eu-west-1"
+    events:
+      - stream:
+          type: kinesis
+          batchSize: 1
+          startingPosition: TRIM_HORIZON
+          maximumRetryAttempts: 10
+          enabled: true
+          arn: !GetAtt licenceQldbStreamsES.Arn
+    vpc:
+      securityGroupIds:
+        - "Fn::GetAtt": ElasticSecurityGroup.GroupId
+      subnetIds:
+        - Ref: ElasticSubnetA
+    iamRoleStatementsName: qldb-streams-es-lambda-role-${self:provider.stage}
+    iamRoleStatements: # Grant privilege read from Kinesis work stream 
+      - Effect: Allow 
+        Action: 
+          - kinesis:GetRecords 
+          - kinesis:GetShardIterator 
+          - kinesis:DescribeStream 
+          - kinesis:ListStreams 
+          - kinesis:PutRecord 
+          - kinesis:PutRecords 
+        Resource: 
+          - !GetAtt licenceQldbStreamsES.Arn
+      - Effect: Allow
+        Action:
+          - es:ESHttpPost
+          - es:ESHttpPut
+          - es:ESHttpDelete
+          - es:ESHttpGet
+        Resource: 
+          - !GetAtt ElasticSearch.Arn
+      - Effect: "Allow"
+        Action:
+          - "xray:PutTraceSegments"
+          - "xray:PutTelemetryRecords"
+        Resource: "*" # Restrict resource to minimum required
+
+
+  ElasticFuzzySearch:
+    name: es-search-${self:provider.stage}
+    handler: functions/es-fuzzy-search.handler
+    environment:
+      ELASTICSEARCH_DOMAIN: !GetAtt ElasticSearch.DomainEndpoint
+      REGION: "eu-west-1"
+    events:
+      - http:
+          path: /search/{lastname}
+          method: get
+    vpc:
+      securityGroupIds:
+        - "Fn::GetAtt": ElasticSecurityGroup.GroupId
+      subnetIds:
+        - Ref: ElasticSubnetA
+    iamRoleStatementsName: es-search-role-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - es:ESHttpPost
+          - es:ESHttpPut
+          - es:ESHttpDelete
+          - es:ESHttpGet
+        Resource: 
+          - !GetAtt ElasticSearch.Arn
+      - Effect: "Allow"
+        Action:
+          - "xray:PutTraceSegments"
+          - "xray:PutTelemetryRecords"
+        Resource: "*" # Restrict resource to minimum required
+      
+
+
+resources:
+  Resources:
+
+    ElasticSearch:
+      Type: AWS::Elasticsearch::Domain
+      Properties:
+        DomainName: "#{AWS::StackName}"
+        ElasticsearchVersion: 7.7
+        ElasticsearchClusterConfig:
+          DedicatedMasterEnabled: false
+          InstanceCount: "1"
+          InstanceType: r5.large.elasticsearch
+          ZoneAwarenessEnabled: false
+        EBSOptions:
+          EBSEnabled: true
+          Iops: 0
+          VolumeSize: 10
+          VolumeType: standard
+        EncryptionAtRestOptions:
+          Enabled: true
+          KmsKeyId: arn:aws:kms:${self:provider.region}:#{AWS::AccountId}:alias/aws/es
+        NodeToNodeEncryptionOptions:
+          Enabled: true
+        DomainEndpointOptions:
+          EnforceHTTPS: true
+        AccessPolicies:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: "*"
+              Action: es:ESHttp*
+              Resource: arn:aws:es:${self:provider.region}:#{AWS::AccountId}:domain/#{AWS::StackName}/*
+        VPCOptions: 
+          SubnetIds: 
+            - !Ref ElasticSubnetA 
+          SecurityGroupIds: 
+            - !Ref ElasticSecurityGroup
+
+    ElasticStreamRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - es.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: /
+        ManagedPolicyArns:
+          - !Ref ElasticStreamManagedPolicy
+
+    ElasticStreamManagedPolicy:
+      Type: 'AWS::IAM::ManagedPolicy'
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: ElasticVPCPermissions
+              Effect: Allow
+              Action:
+                - 'ec2:CreateNetworkInterface'
+                - 'ec2:DeleteNetworkInterface'
+                - 'ec2:DescribeNetworkInterfaces'
+                - 'ec2:ModifyNetworkInterfaceAttribute'
+                - 'ec2:DescribeSecurityGroups'
+                - 'ec2:DescribeSubnets'
+                - 'ec2:DescribeVpcs'
+              Resource: "*"
+
+    ElasticVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: "10.0.0.0/16"
+        EnableDnsSupport: true
+        EnableDnsHostnames: true
+        Tags:
+          - Key: Name
+            Value: qldb-streams-elastic
+
+    ElasticSubnetA:
+      DependsOn: ElasticVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: ElasticVPC
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: "10.0.2.0/24"
+        Tags:
+          - Key: Name
+            Value: qldb-streams-es-a
+        
+    ElasticSecurityGroup:
+      DependsOn: ElasticVPC
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Elasticsearch
+        VpcId:
+          Ref: ElasticVPC
+        SecurityGroupIngress: 
+          - FromPort: '443' 
+            IpProtocol: tcp 
+            ToPort: '443' 
+            CidrIp: 0.0.0.0/0
+        Tags:
+          - Key: Name
+            Value: qldb-streams-es-sg
+
+    licenceQldbStreamsES:
+      Type: AWS::Kinesis::Stream
+      Properties: 
+        Name: QLDBBicycleLicence-es-${self:provider.stage}
+        ShardCount: 1
+
+    StreamHandlerLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        TracingConfig:
+          Mode: "Active"
+
+    ElasticFuzzySearchLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        TracingConfig:
+          Mode: "Active"
+
+    QLDBStreamRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - qldb.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: /
+        ManagedPolicyArns:
+          - !Ref QLDBStreamManagedPolicy
+
+    QLDBStreamManagedPolicy:
+      Type: 'AWS::IAM::ManagedPolicy'
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: QLDBStreamKinesisESPermissions
+              Effect: Allow
+              Action:
+                - 'kinesis:PutRecord*'
+                - 'kinesis:DescribeStream'
+                - 'kinesis:ListShards'
+              Resource: 
+                Fn::GetAtt: [licenceQldbStreamsES, Arn]
+
+    ESQLDBStream:
+      Type: AWS::QLDB::Stream
+      Properties: 
+        InclusiveStartTime: "2020-05-29T00:00:00Z"
+        KinesisConfiguration: 
+          AggregationEnabled: true
+          StreamArn:
+            Fn::GetAtt: [licenceQldbStreamsES, Arn]
+        LedgerName: !ImportValue qldb-bicycle-licence
+        RoleArn: 
+          Fn::GetAtt: [QLDBStreamRole, Arn]
+        StreamName: QLDBStream-elastic-${self:provider.stage}
+
+Outputs:
+  ESDomainArn: 
+    Value: !GetAtt ElasticsearchDomain.DomainArn 
+    Export:
+      Name: "#{AWS::StackName}:${self:provider.stage}:ElasticSearch:DomainArn"
+  ESDomainEndpoint: 
+    Value: !GetAtt ElasticsearchDomain.DomainEndpoint 
+    Export:
+      Name: "#{AWS::StackName}:${self:provider.stage}:ElasticSearch:DomainEndpoint"
+  SecurityGroupId: 
+    Value: !Ref ElasticSecurityGroup
+  SubnetId: 
+    Value: !Ref ElasticSubnetA
