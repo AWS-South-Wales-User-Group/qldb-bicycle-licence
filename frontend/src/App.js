@@ -1,7 +1,7 @@
 import Register from "./components/Register.js";
 import History from "./components/History.js";
 import Search from "./components/Search.js";
-
+import Enquiry from "./components/Enquiry.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -24,6 +24,9 @@ function App() {
           <LinkContainer to='/search'>
             <Nav.Link>Search</Nav.Link>
           </LinkContainer>
+          <LinkContainer to='/enquiry'>
+            <Nav.Link>Enquiry</Nav.Link>
+          </LinkContainer>
         </Nav>
       </Navbar>
       <Container>
@@ -31,6 +34,7 @@ function App() {
           <Route path='/register' component={Register} />
           <Route path='/history' component={History} />
           <Route path='/search' component={Search} />
+          <Route path='/enquiry' component={Enquiry} />
           <Route path='/'>
             <Redirect from="/" to="/register" exact /> 
           </Route>
