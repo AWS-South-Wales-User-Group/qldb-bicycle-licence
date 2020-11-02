@@ -9,7 +9,7 @@ API.configure({
     endpoints: [
       {
         endpoint:
-          "https://25j45ijn05.execute-api.eu-west-1.amazonaws.com/chris",
+          "https://zir75fmqr1.execute-api.eu-west-1.amazonaws.com/chris",
         name: "ApiGatewayRestApi",
         region: "eu-west-1",
       },
