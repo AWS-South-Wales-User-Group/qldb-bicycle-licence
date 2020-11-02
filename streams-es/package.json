@@ -1,0 +1,32 @@
+{
+  "name": "streams-es",
+  "version": "1.0.0",
+  "description": "QLDB streams to Elasticsearch",
+  "main": "functions/qldb-streams-es.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matt Lewis",
+  "license": "MIT",
+  "dependencies": {
+    "@dazn/lambda-powertools-logger": "^1.24.1",
+    "@middy/core": "^1.4.0",
+    "@middy/http-cors": "^1.4.0",
+    "amazon-qldb-driver-nodejs": "^2.0.0",
+    "aws-kinesis-agg": "^4.1.2",
+    "aws-sdk": "^2.783.0",
+    "aws-xray-sdk": "^3.2.0",
+    "ion-js": "^4.0.1",
+    "jsbi": "^3.1.4",
+    "path": "^0.12.7",
+    "superagent": "^6.1.0"
+  },
+  "devDependencies": {
+    "serverless": "^2.4.0",
+    "serverless-cloudformation-sub-variables": "^0.2.1",
+    "serverless-iam-roles-per-function": "^2.0.2",
+    "serverless-webpack": "^5.3.5",
+    "webpack": "^5.3.2",
+    "webpack-node-externals": "^2.5.2"
+  }
+}
