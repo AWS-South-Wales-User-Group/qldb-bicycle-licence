@@ -30,11 +30,12 @@ export default function Licence(props) {
           {label}:
         </Form.Label>
         <Col sm='10'>
-          <Form.Control   type="text"  readOnly defaultValue={value} />
+          <Form.Control type='text' readOnly defaultValue={value} />
         </Col>
       </Form.Group>
     );
   }
+
   return (
     <>
       <Form>

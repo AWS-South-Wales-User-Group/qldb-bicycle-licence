@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Table, Row, Col, InputGroup } from "react-bootstrap";
+import { Form, Card, Table, InputGroup } from "react-bootstrap";
 import API from "@aws-amplify/api";
 
 export default function Search() {
@@ -12,9 +12,8 @@ export default function Search() {
     setLastname(evt.target.value);
     if (evt.target.value.length > 2) {
       search(evt.target.value);
-    } else{
+    } else {
       setResponse([]);
-
     }
   }
 
@@ -48,31 +47,38 @@ export default function Search() {
           />
         </InputGroup>
       </Form>
-
-      <Table striped bordered hover size='sm' className='mt-4'>
-        <thead>
-          <tr>
-            <th>Licence ID</th>
-            <th>Points</th>
-            <th>Postcode</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {response.map((value, index) => {
-            return (
-              <tr key={index}>
-                <td>{value._source.licenceId}</td>
-                <td>{value._source.points}</td>
-                <td>{value._source.postcode}</td>
-                <td>{value._source.firstName}</td>
-                <td>{value._source.lastName}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+      {error ? (
+        <Card className='text-center mt-4'>
+          <Card.Body className='mt-0'>
+            <h4>{error.data.detail}</h4>{" "}
+          </Card.Body>
+        </Card>
+      ) : (
+        <Table striped bordered hover size='sm' className='mt-4'>
+          <thead>
+            <tr>
+              <th>Licence ID</th>
+              <th>Points</th>
+              <th>Postcode</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {response.map((value, index) => {
+              return (
+                <tr key={index}>
+                  <td>{value._source.licenceId}</td>
+                  <td>{value._source.points}</td>
+                  <td>{value._source.postcode}</td>
+                  <td>{value._source.firstName}</td>
+                  <td>{value._source.lastName}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      )}
     </>
   );
 }
