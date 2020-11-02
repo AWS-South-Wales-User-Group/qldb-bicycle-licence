@@ -62,7 +62,7 @@ export default function History(props) {
           />
           <InputGroup.Append>
             <Button variant='outline-secondary' type='submit'>
-              Search
+              Find
             </Button>
           </InputGroup.Append>
         </InputGroup>
