@@ -23,6 +23,8 @@
   "devDependencies": {
     "serverless": "^2.4.0",
     "serverless-iam-roles-per-function": "^2.0.2",
-    "serverless-pseudo-parameters": "^2.5.0"
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-webpack": "^5.3.5",
+    "webpack": "^5.5.1"
   }
 }

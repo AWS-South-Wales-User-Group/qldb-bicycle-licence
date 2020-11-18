@@ -23,6 +23,13 @@ provider:
 plugins:
   - serverless-iam-roles-per-function
   - serverless-pseudo-parameters
+  - serverless-webpack
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
+    includeModules: false   # Node modules configuration for packaging
+    packager: 'npm'   # Packager that will be used to package your external modules
 
 functions:
   qldbStreamsDynamoDB:
@@ -31,12 +38,18 @@ functions:
     events:
       - stream:
           type: kinesis
-          batchSize: 1
+          batchSize: 50
+          bisectBatchOnFunctionError: true
           startingPosition: TRIM_HORIZON
-          maximumRetryAttempts: 10
+          maximumRetryAttempts: 1
           enabled: true
           arn:
             Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
+          destinations:
+            onFailure:
+              arn:
+                Fn::GetAtt: [ StreamsFailureQueue, Arn ]
+              type: sqs
     iamRoleStatementsName: qldb-streams-dynamodb-role-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow 
@@ -64,6 +77,11 @@ functions:
         - "xray:PutTraceSegments"
         - "xray:PutTelemetryRecords"
       Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+      Resource:
+        Fn::GetAtt: [StreamsFailureQueue, Arn]
 
   DynamoDBGetLicence:
     name: dynamodb-get-licence-${self:provider.stage}
@@ -113,6 +131,10 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
+
+    StreamsFailureQueue:
+      Type: AWS::SQS::Queue        
+
     qldbStreamRole:
       Type: 'AWS::IAM::Role'
       Properties:
@@ -156,3 +178,4 @@ resources:
         Tags:
           - Key: name
             Value: qldb-bicycle-licence
+    
