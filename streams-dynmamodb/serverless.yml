@@ -35,21 +35,6 @@ functions:
   qldbStreamsDynamoDB:
     name: qldb-streams-dynamodb-${self:provider.stage}
     handler: functions/qldb-streams-dynamodb.handler
-    events:
-      - stream:
-          type: kinesis
-          batchSize: 50
-          bisectBatchOnFunctionError: true
-          startingPosition: TRIM_HORIZON
-          maximumRetryAttempts: 1
-          enabled: true
-          arn:
-            Fn::GetAtt: [licenceQldbStreamsDynamodb, Arn]
-          destinations:
-            onFailure:
-              arn:
-                Fn::GetAtt: [ StreamsFailureQueue, Arn ]
-              type: sqs
     iamRoleStatementsName: qldb-streams-dynamodb-role-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream 
     - Effect: Allow 
@@ -179,3 +164,28 @@ resources:
           - Key: name
             Value: qldb-bicycle-licence
     
+    MyEventSourceMapping:
+      Type: AWS::Lambda::EventSourceMapping
+      Properties:
+        BatchSize: 50
+        BisectBatchOnFunctionError: true
+        DestinationConfig: 
+          OnFailure: 
+            Destination: !GetAtt StreamsFailureQueue.Arn
+        Enabled: true
+        EventSourceArn:
+          Fn::Join:
+            - ""
+            -
+              - "arn:aws:kinesis:"
+              -
+                Ref: "AWS::Region"
+              - ":"
+              -
+                Ref: "AWS::AccountId"
+              - ":stream/"
+              -
+                Ref: licenceQldbStreamsDynamodb
+        FunctionName: !GetAtt QldbStreamsDynamoDBLambdaFunction.Arn
+        MaximumRetryAttempts: 1
+        StartingPosition: "TRIM_HORIZON"
