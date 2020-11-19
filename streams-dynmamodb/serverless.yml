@@ -173,19 +173,7 @@ resources:
           OnFailure: 
             Destination: !GetAtt StreamsFailureQueue.Arn
         Enabled: true
-        EventSourceArn:
-          Fn::Join:
-            - ""
-            -
-              - "arn:aws:kinesis:"
-              -
-                Ref: "AWS::Region"
-              - ":"
-              -
-                Ref: "AWS::AccountId"
-              - ":stream/"
-              -
-                Ref: licenceQldbStreamsDynamodb
+        EventSourceArn: !GetAtt licenceQldbStreamsDynamodb.Arn
         FunctionName: !GetAtt QldbStreamsDynamoDBLambdaFunction.Arn
         MaximumRetryAttempts: 1
         StartingPosition: "TRIM_HORIZON"
