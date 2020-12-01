@@ -37,16 +37,25 @@ const getLicence = async (id) => {
 
   const params = {
     TableName: TABLE_NAME,
-    Key: { pk: id },
+    Key: { pk: id }
   };
   const data = await dynamodb.get(params).promise();
   const item = data.Item;
 
-  return {
-    id: item.pk,
-    penaltyPoints: item.penaltyPoints,
-    postcode: item.postcode,
-  };
+  if (item.isDeleted) {
+    return {
+      id: null,
+      penaltyPoints: null,
+      postcode: null,
+    };
+  } else {
+    return {
+      id: item.pk,
+      penaltyPoints: item.penaltyPoints,
+      postcode: item.postcode,
+    };
+  }
+
 };
 
 const updateLicence = async (id, points, postcode, version) => {
