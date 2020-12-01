@@ -10,7 +10,7 @@ export default function Search() {
   function handleChange(evt) {
     evt.preventDefault();
     setLastname(evt.target.value);
-    if (evt.target.value.length > 2) {
+    if (evt.target.value.length > 1) {
       search(evt.target.value);
     } else {
       setResponse([]);
@@ -43,7 +43,7 @@ export default function Search() {
             type='text'
             value={lastname}
             onChange={(e) => handleChange(e)}
-            placeholder='Enter at least 3 characters of the last name'
+            placeholder='Enter at least 2 characters of the last name'
           />
         </InputGroup>
       </Form>
