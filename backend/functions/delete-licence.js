@@ -4,8 +4,11 @@
 const Log = require('@dazn/lambda-powertools-logger');
 const { deleteLicence } = require('./helper/licence');
 const LicenceNotFoundError = require('./lib/LicenceNotFoundError');
+const middy = require('@middy/core')
+const cors = require('@middy/http-cors')
 
-module.exports.handler = async (event) => {
+
+const handler = async (event) => {
   const { licenceId } = JSON.parse(event.body);
   Log.debug(`In the delete licence handler for licenceid ${licenceId}`);
 
@@ -32,3 +35,5 @@ module.exports.handler = async (event) => {
     };
   }
 };
+
+module.exports.handler = middy(handler).use(cors())
