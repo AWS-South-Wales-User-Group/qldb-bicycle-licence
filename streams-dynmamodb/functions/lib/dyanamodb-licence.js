@@ -1,4 +1,5 @@
 const Log = require('@dazn/lambda-powertools-logger');
+const LicenceNotFoundError = require('./LicenceNotFoundError');
 
 // see https://theburningmonk.com/2019/03/just-how-expensive-is-the-full-aws-sdk/
 const DynamoDB = require('aws-sdk/clients/dynamodb');
@@ -42,20 +43,21 @@ const getLicence = async (id) => {
   const data = await dynamodb.get(params).promise();
   const item = data.Item;
 
-  if (item.isDeleted) {
-    return {
-      id: null,
-      penaltyPoints: null,
-      postcode: null,
-    };
-  } else {
-    return {
-      id: item.pk,
-      penaltyPoints: item.penaltyPoints,
-      postcode: item.postcode,
-    };
-  }
+  console.log('data.length: ' + data.length);
 
+  if (!data.Item) {
+    throw new LicenceNotFoundError(400, 'Licence Not Found Error', `Licence record with LicenceId ${id} does not exist`);
+  } else {
+    if (item.isDeleted) {
+      throw new LicenceNotFoundError(400, 'Licence Not Found Error', `Licence record with LicenceId ${id} does not exist`);
+    } else {
+      return {
+        id: item.pk,
+        penaltyPoints: item.penaltyPoints,
+        postcode: item.postcode,
+      };  
+    }
+  }
 };
 
 const updateLicence = async (id, points, postcode, version) => {

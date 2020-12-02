@@ -8,6 +8,7 @@ export default function Search() {
   const [response, setResponse] = useState({});
   const [error, setError] = useState();
 
+
   function handleSubmit(evt) {
     evt.preventDefault();
     get(licenceId);
@@ -40,9 +41,6 @@ export default function Search() {
     API.del(apiName, path, payload)
       .then((response) => {
         console.log(response);
-//        setMessage(response);
-//        setLicenceId(response.licenceId);
-//        setPenaltyPoints(response.penaltyPoints);
       })
       .catch((error) => {
         console.log(error.response);
