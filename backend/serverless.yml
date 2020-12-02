@@ -94,6 +94,7 @@ functions:
       - http:
           path: /licences
           method: delete
+          cors: true # <-- CORS!
 
   createQldbTable:
     name: qldb-licence-table-${self:provider.stage}
