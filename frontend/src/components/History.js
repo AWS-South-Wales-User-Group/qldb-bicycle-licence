@@ -23,20 +23,23 @@ export default function History(props) {
   }, [routeProps.location]);
 
   function getHistory(licenceid) {
+    console.log('In getHistory with licenceid: ' + licenceid);
     const apiName = "ApiGatewayRestApi";
     const path = `/licences/history/${licenceid}`;
     API.get(apiName, path)
       .then((response) => {
         const sortedResponse = response.sort(function (a, b) {
           return (
-            new Date(b.data.events.eventDate) -
-            new Date(a.data.events.eventDate)
+            new Date(b.metadata.txTime) -
+            new Date(a.metadata.txTime)
           );
         });
+
         setResponse(sortedResponse);
         setError(null);
       })
       .catch((error) => {
+        console.log('In the error handler: ' + error);
         setError(error.response);
         setResponse([]);
       });
@@ -94,8 +97,8 @@ export default function History(props) {
                 return (
                   <tr key={index}>
                     <td>{value.metadata.version}</td>
-                    <td>{value.data.events.eventName}</td>
-                    <td>{value.data.events.eventDate}</td>
+                    <td>{value.data === undefined ? 'LicenceDeleted' : value.data.events.eventName}</td>
+                    <td>{value.metadata.txTime}</td>
                   </tr>
                 );
               })}

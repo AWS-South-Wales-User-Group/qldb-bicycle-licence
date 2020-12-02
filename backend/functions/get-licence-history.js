@@ -15,6 +15,8 @@ const handler = async (event) => {
     const response = await getLicenceHistory(licenceid);
     const licence = JSON.parse(response);
 
+    Log.debug(`Returning: ${JSON.stringify(licence)}`);
+
     return {
       statusCode: 200,
       body: JSON.stringify(licence),
