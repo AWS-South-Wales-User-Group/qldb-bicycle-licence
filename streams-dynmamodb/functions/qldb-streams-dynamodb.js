@@ -39,7 +39,7 @@ async function processIon(ionRecord) {
   Log.debug(`Version ${version} and id ${id}`);
 
   // Check to see if the data section exists.
-  if (ionRecord.payload.revision.data == null) {
+  if (! ionRecord.payload.revision.data) {
     Log.debug('No data section so handle as a delete');
     await deleteLicence(id, version);
   } else {
