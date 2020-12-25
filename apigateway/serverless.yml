@@ -14,20 +14,12 @@ provider:
   region: eu-west-1
   stackName: ${self:service}
 
-
 resources:
   Resources:
     QldbApiGW:
       Type: AWS::ApiGateway::RestApi
       Properties:
         Name: QldbApiGW
-
-    QldbWebsocketApi:
-      Type: AWS::ApiGatewayV2::Api
-      Properties:
-        Name: QldbWebsocketApi
-        ProtocolType: WEBSOCKET
-        RouteSelectionExpression: '$request.body.action'
 
   Outputs:
     apiGatewayRestApiId:
@@ -43,9 +35,3 @@ resources:
           - RootResourceId
       Export:
         Name: QldbApiGateway-rootResourceId
-
-    websocketApiId:
-      Value:
-        Ref: QldbWebsocketApi
-      Export:
-        Name: QldbApiGateway-websocketApiId

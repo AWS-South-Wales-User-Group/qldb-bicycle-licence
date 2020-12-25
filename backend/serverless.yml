@@ -15,7 +15,6 @@ provider:
   apiGateway:
     restApiId: !ImportValue QldbApiGateway-restApiId
     restApiRootResourceId: !ImportValue QldbApiGateway-rootResourceId
-    websocketApiId:  !ImportValue  QldbApiGateway-websocketApiId
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
     LEDGER_NAME: 
