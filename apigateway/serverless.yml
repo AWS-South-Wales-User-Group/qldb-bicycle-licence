@@ -19,7 +19,7 @@ resources:
     QldbApiGW:
       Type: AWS::ApiGateway::RestApi
       Properties:
-        Name: QldbApiGW
+        Name: QldbBicycleLicenceApiGW
 
   Outputs:
     apiGatewayRestApiId:
