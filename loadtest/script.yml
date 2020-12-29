@@ -1,0 +1,26 @@
+config:
+    target: "https://{endpoint}"
+    phases:
+      - duration: 10
+        arrivalRate: 1
+    processor: "createTestPerson.js"
+    plugins:
+      cloudwatch:
+        namespace: "serverless-artillery-qldb-loadtest"
+  
+scenarios:
+    - flow:
+        # call createTestPerson() to create the govid, firstName, lastName, DOB, type and address variables
+        - function: "createTestPerson"
+        - post:
+            url: "/licences/"
+            json:
+                firstName: "{{ firstName }}"
+                lastName: "{{ lastName }}"
+                email: "{{ email }}"
+                street: "{{ street }}"
+                county: "{{ county }}"
+                postcode: "{{ postcode }}"
+        # Print the data we're sending while debugging the script:
+        - log: "Sent a request to /qldb with {{ firstName }}, {{ lastName }}, {{ email }}, {{ street }}, {{ county }}, {{ postcode }}"
+
