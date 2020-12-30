@@ -4,9 +4,10 @@
   "description": "Set up a shared API gateway",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sls": "serverless"
   },
-  "author": "",
+  "author": "Matt Lewis",
   "license": "MIT",
   "devDependencies": {
     "serverless": "^2.4.0"
