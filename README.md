@@ -1,5 +1,8 @@
-# qldb-bicycle-licence
+# QLDB Bicycle Licence
 
+The QLDB Bicycle Licence application is a sample application to demonstrate some of the capabilities of `Amazon QLDB` and how it can be used to build out a serverless event-driven application.
+
+![Architecture Overview](/images/architecture-overview.png)
 
 ### Development
 
