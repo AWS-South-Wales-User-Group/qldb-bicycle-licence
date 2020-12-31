@@ -10,7 +10,7 @@ Each seperate deployment is setup in a different folder in this repository. This
 
 ## Deployments
 
-Once the repository is cloned, it is important to deploy components in a specific order.
+Once the repository is cloned, it is important to deploy components in a specific order. By default, all deployments will use a stage name of `dev`, but this can be overridden using the `--stage` attribute.
 
 ### API Gateway
 
@@ -32,9 +32,21 @@ npm ci
 npm run sls deploy
 ```
 
+The API endpoints will be output when the components are deployed. You will need to make a note of the base URL endpoint for the next section.
+
+```bash
+endpoints:
+  POST - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences
+  PUT - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences
+  PUT - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences/contact
+  GET - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences/{licenceid}
+  GET - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences/history/{licenceid}
+  DELETE - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences
+```
+
 ### Frontend
 
-At this point, the UI can be deployed and configured. The first step is to update the frontend Amplify configuration in ```./frontend/src/index.js```
+At this point, the UI can be deployed and configured. The first step is to update the frontend Amplify configuration in ```./frontend/src/index.js``` with the base URL endpoint.
 
 ``` javascript
 Amplify.configure({
@@ -42,7 +54,7 @@ Amplify.configure({
     endpoints: [
       {
         endpoint:
-          "https://....execute-api.eu-west-1.amazonaws.com/....",
+          "https://{example}.execute-api.eu-west-1.amazonaws.com/dev",
         name: "ApiGatewayRestApi",
         region: "eu-west-1",
       },
@@ -51,7 +63,7 @@ Amplify.configure({
 });
 ```
 
-The frontend can be run locally using the following commands:
+The frontend can then be run locally using the following commands:
 
 ``` bash
 cd frontend
