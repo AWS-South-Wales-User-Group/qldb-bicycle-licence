@@ -10,22 +10,32 @@ Each seperate deployment is setup in a different folder in this repository. This
 
 ## Deployments
 
+Once the repository is cloned, it is important to deploy components in a specific order.
+
 ### API Gateway
 
+The first component to be deployed is the centralised API Gateway. This is used to provide a single endpoint
+
+``` bash
+cd apigateway
+npm ci
+npm run sls deploy
+```
 
 ### Backend
 
-### Development
+Next to be deployed are the backend components, consisting of AWS Lambda functions and Amazon QLDB
 
-#### backend deployment
 ``` bash
-$ cd backend
-$ npm ci
-$ npm run sls -- deploy --stage <name>
+cd backend
+npm ci
+npm run sls deploy
 ```
 
-#### frontend deployment
-Update the frontend Amplify configuration in ```./frontend/src/index.js```
+### Frontend
+
+At this point, the UI can be deployed and configured. The first step is to update the frontend Amplify configuration in ```./frontend/src/index.js```
+
 ``` javascript
 Amplify.configure({
   API: {
@@ -40,9 +50,11 @@ Amplify.configure({
   },
 });
 ```
-``` bash
-$ cd frontend
-$ npm ci
-$ npm run start
-```
 
+The frontend can be run locally using the following commands:
+
+``` bash
+cd frontend
+npm ci
+npm run start
+```
