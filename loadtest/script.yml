@@ -1,8 +1,8 @@
 config:
-    target: "https://{endpoint}"
+    target: "https://{example}.execute-api.eu-west-1.amazonaws.com/dev"
     phases:
-      - duration: 10
-        arrivalRate: 1
+      - duration: 20
+        arrivalRate: 3
     processor: "createTestPerson.js"
     plugins:
       cloudwatch:
@@ -21,6 +21,16 @@ scenarios:
                 street: "{{ street }}"
                 county: "{{ county }}"
                 postcode: "{{ postcode }}"
+            capture:
+                json: "$.licenceId"
+                as: "licenceId"
         # Print the data we're sending while debugging the script:
         - log: "Sent a request to /qldb with {{ firstName }}, {{ lastName }}, {{ email }}, {{ street }}, {{ county }}, {{ postcode }}"
+        # Now use the extracted ID to add some penalty points
+        - put:
+            url: "/licences/"
+            json:
+                licenceId: "{{ licenceId }}"
+                points: "{{$randomNumber(0,6)}}"
+
 

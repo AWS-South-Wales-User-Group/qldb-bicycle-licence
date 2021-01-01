@@ -1,6 +1,11 @@
 {
   "version": "0.0.1",
   "description": "A load generator function implementation",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sls": "serverless",
+    "slsart": "slsart"
+  },
   "repository": "n/a",
   "license": "Apache-2.0",
   "dependencies": {
@@ -12,5 +17,8 @@
     "lodash.omit": "^4.5.0",
     "util-promisify": "^2.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "serverless": "^1.83.2",
+    "serverless-artillery": "^0.5.2"
+  }
 }
