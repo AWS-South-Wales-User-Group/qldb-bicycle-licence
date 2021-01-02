@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "@aws-amplify/api";
-import { Table, Card, Form, InputGroup, Button } from "react-bootstrap";
+import { Table, Card, Form, InputGroup, Button, Accordion, ListGroup } from "react-bootstrap";
 import Licence from "./Licence";
 
 export default function History(props) {
@@ -90,6 +90,7 @@ export default function History(props) {
                 <th>Version</th>
                 <th>Event Name</th>
                 <th>Event Date</th>
+                <th>Revision Details</th>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +99,31 @@ export default function History(props) {
                   <tr key={index}>
                     <td>{value.metadata.version}</td>
                     <td>{value.data === undefined ? 'LicenceDeleted' : value.data.events.eventName}</td>
-                    <td>{value.metadata.txTime}</td>
+                    <td>{new Intl.DateTimeFormat("en-GB", {
+                          year: "numeric",
+                          month: "short",
+                          day: "2-digit",
+                          hour: 'numeric', minute: 'numeric', second: 'numeric'
+                      }).format(new Date(value.metadata.txTime))}</td>
+                    <td>
+                      <Accordion>
+                        <Card>
+                          <Card.Header>
+                            <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                              Revision Details
+                            </Accordion.Toggle>
+                          </Card.Header>
+                          <Accordion.Collapse eventKey="0">
+                            <ListGroup variant="flush">
+                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'Penalty Points: ' + value.data.penaltyPoints}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'Street: ' + value.data.street}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'County: ' + value.data.county}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'Postcode: ' + value.data.postcode}</ListGroup.Item>
+                            </ListGroup>
+                          </Accordion.Collapse>
+                        </Card>
+                      </Accordion>
+                    </td>
                   </tr>
                 );
               })}
