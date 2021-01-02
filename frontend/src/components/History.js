@@ -115,10 +115,10 @@ export default function History(props) {
                           </Card.Header>
                           <Accordion.Collapse eventKey="0">
                             <ListGroup variant="flush">
-                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'Penalty Points: ' + value.data.penaltyPoints}</ListGroup.Item>
-                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'Street: ' + value.data.street}</ListGroup.Item>
-                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'County: ' + value.data.county}</ListGroup.Item>
-                              <ListGroup.Item>{value.data === undefined ? 'deleted' : 'Postcode: ' + value.data.postcode}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'Penalty Points: deleted' : 'Penalty Points: ' + value.data.penaltyPoints}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'Street: deleted' : 'Street: ' + value.data.street}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'County: deleted' : 'County: ' + value.data.county}</ListGroup.Item>
+                              <ListGroup.Item>{value.data === undefined ? 'Postcode: deleted' : 'Postcode: ' + value.data.postcode}</ListGroup.Item>
                             </ListGroup>
                           </Accordion.Collapse>
                         </Card>
