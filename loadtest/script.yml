@@ -3,7 +3,7 @@ config:
     phases:
       - duration: 20
         arrivalRate: 3
-    processor: "createTestPerson.js"
+    processor: "createBicycleLicence.js"
     plugins:
       cloudwatch:
         namespace: "serverless-artillery-qldb-loadtest"
@@ -11,7 +11,7 @@ config:
 scenarios:
     - flow:
         # call createTestPerson() to create the govid, firstName, lastName, DOB, type and address variables
-        - function: "createTestPerson"
+        - function: "createBicycleLicence"
         - post:
             url: "/licences/"
             json:
@@ -26,11 +26,36 @@ scenarios:
                 as: "licenceId"
         # Print the data we're sending while debugging the script:
         - log: "Sent a request to /qldb with {{ firstName }}, {{ lastName }}, {{ email }}, {{ street }}, {{ county }}, {{ postcode }}"
-        # Now use the extracted ID to add some penalty points
+        # Now pause then use the extracted ID to add some penalty points
+        - think: 30
+        - function: "generateRandom"
         - put:
             url: "/licences/"
+            ifTrue: "{{ random }} > 1"
             json:
                 licenceId: "{{ licenceId }}"
-                points: "{{$randomNumber(0,6)}}"
+                points: "{{$randomNumber(1,6)}}"
+        # Now pause then use the extracted ID to add some more penalty points
+        - think: 30
+        - function: "generateRandom"
+        - put:
+            url: "/licences/"
+            ifTrue: "{{ random }} > 1"
+            json:
+                licenceId: "{{ licenceId }}"
+                points: "{{$randomNumber(1,6)}}"
+        # Now pause then update the address
+        - think: 30
+        - function: "createNewAddress"
+        - put:
+            url: "/licences/contact/"
+            ifTrue: "{{ random }} > 2"
+            json:
+                licenceId: "{{ licenceId }}"
+                street: "{{ street }}"
+                county: "{{ county }}"
+                postcode: "{{ postcode }}"
+
+
 
 
