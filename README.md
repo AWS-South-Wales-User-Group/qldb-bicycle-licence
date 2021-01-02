@@ -77,10 +77,12 @@ npm run start
 
 ## Load testing
 
-A `Serverless Artillery` setup has been configured to allow load testing to be carried out, or an initial data load.
+A `Serverless Artillery` setup has been configured to allow an initial data load to be carried out.
 
 ```bash
 cd loadtesting
 npm run slsart -- deploy --stage dev
 npm run slsart -- invoke --stage dev
 ```
+
+For more information about the load testing setup, see the individual [readme](/loadtest) file.
