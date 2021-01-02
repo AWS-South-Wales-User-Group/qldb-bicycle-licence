@@ -19,8 +19,10 @@ The first component to be deployed is the centralised API Gateway. This is used 
 ``` bash
 cd apigateway
 npm ci
-npm run sls deploy
+npm run sls -- deploy --stage {stage-name}
 ```
+
+For more information about the API Gateway setup, see the individual [readme](../apigateway/README.md) file.
 
 ### Backend
 
@@ -29,7 +31,7 @@ Next to be deployed are the backend components, consisting of AWS Lambda functio
 ``` bash
 cd backend
 npm ci
-npm run sls deploy
+sls deploy [--stage {stage-name}]
 ```
 
 The API endpoints will be output when the components are deployed. You will need to make a note of the base URL endpoint for the next section.
@@ -69,4 +71,14 @@ The frontend can then be run locally using the following commands:
 cd frontend
 npm ci
 npm run start
+```
+
+## Load testing
+
+A `Serverless Artillery` setup has been configured to allow load testing to be carried out, or an initial data load.
+
+```bash
+cd loadtesting
+npm run slsart -- deploy --stage dev
+npm run slsart -- invoke --stage dev
 ```
