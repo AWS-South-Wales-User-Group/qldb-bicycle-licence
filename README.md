@@ -46,6 +46,8 @@ endpoints:
   DELETE - https://{example}.execute-api.eu-west-1.amazonaws.com/dev/licences
 ```
 
+For more information about the backend setup, see the individual [readme](/backend) file.
+
 ### Frontend
 
 At this point, the UI can be deployed and configured. The first step is to update the frontend Amplify configuration in ```./frontend/src/index.js``` with the base URL endpoint.
