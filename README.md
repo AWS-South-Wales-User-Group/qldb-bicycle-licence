@@ -22,7 +22,7 @@ npm ci
 npm run sls -- deploy --stage {stage-name}
 ```
 
-For more information about the API Gateway setup, see the individual [readme](../apigateway/README.md) file.
+For more information about the API Gateway setup, see the individual [readme](/apigateway) file.
 
 ### Backend
 
