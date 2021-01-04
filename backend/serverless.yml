@@ -51,7 +51,9 @@ functions:
           path: /licences
           method: post
           cors: true
-
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
   updateLicence:
     name: update-bicycle-licence-${self:provider.stage}
     handler: functions/update-licence.handler
@@ -60,6 +62,9 @@ functions:
           path: /licences
           method: put
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
 
   updateContact:
     name: update-bicycle-contact-${self:provider.stage}
@@ -69,6 +74,9 @@ functions:
           path: /licences/contact
           method: put
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
 
   getLicence:
     name: get-bicycle-licence-${self:provider.stage}
@@ -77,6 +85,9 @@ functions:
       - http:
           path: /licences/{licenceid}
           method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
 
   getLicenceHistory:
     name: get-bicycle-licence-history-${self:provider.stage}
@@ -85,6 +96,9 @@ functions:
       - http:
           path: /licences/history/{licenceid}
           method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
 
   deleteLicence:
     name: delete-bicycle-licence-${self:provider.stage}
@@ -94,7 +108,10 @@ functions:
           path: /licences
           method: delete
           cors: true # <-- CORS!
-
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !ImportValue QldbApiGateway-ApiGatewayAuthorizerId
+            
   createQldbTable:
     name: qldb-licence-table-${self:provider.stage}
     handler: functions/createQldbTable.handler

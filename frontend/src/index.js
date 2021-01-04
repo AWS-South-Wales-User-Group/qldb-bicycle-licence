@@ -3,15 +3,27 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import API from "@aws-amplify/api";
+import Auth from "@aws-amplify/auth";
+
+Auth.configure({
+  Auth: {
+    region: "eu-west-1",
+    userPoolId: "eu-west-1_****",
+    userPoolWebClientId: "****"
+  },
+});
 
 API.configure({
   API: {
     endpoints: [
       {
         endpoint:
-          "https://zir75fmqr1.execute-api.eu-west-1.amazonaws.com/chris",
+          "https://****",
         name: "ApiGatewayRestApi",
         region: "eu-west-1",
+        custom_header: async () => { 
+          return { Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}` }
+        }
       },
     ],
   },
