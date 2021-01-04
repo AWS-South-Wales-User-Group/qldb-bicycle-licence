@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "@aws-amplify/api";
-import { Table, Card, Form, InputGroup, Button, Accordion, ListGroup } from "react-bootstrap";
+import { Table, Card, Form, InputGroup, Button, Accordion } from "react-bootstrap";
 import Licence from "./Licence";
 
 export default function History(props) {
@@ -113,14 +113,16 @@ export default function History(props) {
                               Revision Details
                             </Accordion.Toggle>
                           </Card.Header>
+                          <Card.Body>
                           <Accordion.Collapse eventKey="0">
-                            <ListGroup variant="flush">
-                              <ListGroup.Item>{value.data === undefined ? 'Penalty Points: deleted' : 'Penalty Points: ' + value.data.penaltyPoints}</ListGroup.Item>
-                              <ListGroup.Item>{value.data === undefined ? 'Street: deleted' : 'Street: ' + value.data.street}</ListGroup.Item>
-                              <ListGroup.Item>{value.data === undefined ? 'County: deleted' : 'County: ' + value.data.county}</ListGroup.Item>
-                              <ListGroup.Item>{value.data === undefined ? 'Postcode: deleted' : 'Postcode: ' + value.data.postcode}</ListGroup.Item>
-                            </ListGroup>
+                            {value.data === undefined ? <> Licence Deleted </> : <>
+                              Penalty Points: {value.data.penaltyPoints} <br/>
+                              Street: {value.data.street} <br/> 
+                              County: {value.data.county} <br/>
+                              Postcode: {value.data.postcode}
+                              </>}
                           </Accordion.Collapse>
+                          </Card.Body>
                         </Card>
                       </Accordion>
                     </td>
