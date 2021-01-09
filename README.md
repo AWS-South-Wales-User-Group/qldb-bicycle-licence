@@ -31,7 +31,7 @@ Next to be deployed are the backend components, consisting of `AWS Lambda` funct
 ``` bash
 cd backend
 npm ci
-sls deploy [--stage {stage-name}]
+npm run sls -- deploy [--stage {stage-name}]
 ```
 
 The API endpoints will be output when the components are deployed. You will need to make a note of the base URL endpoint for the next section.
@@ -82,7 +82,7 @@ The `Streams DynamoDB` component, consists of a `QLDB Stream` that publishes rec
 ``` bash
 cd streams-dynamodb
 npm ci
-sls deploy [--stage {stage-name}]
+npm run sls -- deploy [--stage {stage-name}]
 ```
 
 ### Streams Elasticsearch
@@ -92,7 +92,7 @@ The `Streams Elasticsearch` component, consists of a `QLDB Stream` that publishe
 ``` bash
 cd streams-es
 npm ci
-sls deploy [--stage {stage-name}]
+npm run sls -- deploy [--stage {stage-name}]
 ```
 
 In some cases, the initial deployment may fail with the following error message:
