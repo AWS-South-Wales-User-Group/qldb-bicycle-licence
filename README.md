@@ -107,6 +107,8 @@ In this case, create a service-linked role first using the `AWS CLI` with the fo
 aws iam create-service-linked-role --aws-service-name es.amazonaws.com
 ```
 
+For more information about the `Streams ES` setup, see the individual [readme](/streams-es) file.
+
 ## Load testing
 
 A `Serverless Artillery` setup has been configured to allow an initial data load to be carried out.
