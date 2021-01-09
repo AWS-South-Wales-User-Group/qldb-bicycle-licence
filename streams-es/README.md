@@ -4,7 +4,29 @@
 
 The AWS services being used for this are shown in the diagram below. Note that both `Elasticsearch` and `Lambda` are configured to connect to the VPC by establishing an Elastic Network Interface (ENI):
 
-![Architecture Overview](images/qldb-es-architecture.png)
+![Architecture Overview](../images/qldb-es-architecture.png)
+
+## Deploying Streams ES
+
+This can be deployed as follows:
+
+``` bash
+cd streams-es
+npm ci
+npm run sls -- deploy [--stage {stage-name}]
+```
+
+In some cases, the initial deployment may fail with the following error message:
+
+```bash
+'ValidationException: Before you can proceed, you must enable a service-linked role to give Amazon ES permissions to access your VPC'
+```
+
+In this case, create a service-linked role first using the `AWS CLI` with the following command:
+
+```bash
+aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
 
 ## Configuring Elasticsearch
 
