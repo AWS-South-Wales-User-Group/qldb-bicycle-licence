@@ -11,7 +11,7 @@ The stack can be deployed by using the following commands:
 ``` bash
 cd backend
 npm ci
-sls deploy [--stage {stage-name}]
+npm run sls -- deploy [--stage {stage-name}]
 ```
 
 By default, a stage name of `dev` is configured, but this can be overridden at deployment time.
@@ -21,10 +21,10 @@ By default, a stage name of `dev` is configured, but this can be overridden at d
 The stack can be removed at any point in time using the following command:
 
 ``` bash
-sls remove [--stage {stage-name}]
+npm run sls -- remove [--stage {stage-name}]
 ```
 
-The stack using an `AWS Lambda` custom resource to create the table and indexes in QLDB. Unfortunately, the `CloudWatch Log Group` for these custom resources is not automatically removed. If you then try and deploy the stack again, you will get the following error:
+The stack uses an `AWS Lambda` custom resource to create the table and indexes in QLDB. Unfortunately, the `CloudWatch Log Group` for these custom resources is not automatically removed. If you then try and deploy the stack again, you will get the following error:
 
 ```bash
 Serverless Error ----------------
