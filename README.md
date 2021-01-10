@@ -115,6 +115,19 @@ A `Serverless Artillery` setup has been configured to allow an initial data load
 
 ```bash
 cd loadtesting
+npm ci
+```
+
+Before deploying the default configuration, you need to update the `target` value in the `script.yml` with the `API Gateway` endpoint as previously carried out:
+
+```yml
+config:
+    target: "https://{example}.execute-api.eu-west-1.amazonaws.com/dev"
+```
+
+To use the sample configuration settings, you can deploy and invoke using the following commands:
+
+```bash
 npm run slsart -- deploy --stage dev
 npm run slsart -- invoke --stage dev
 ```
