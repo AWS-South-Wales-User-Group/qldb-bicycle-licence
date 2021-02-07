@@ -11,33 +11,19 @@ const bicycleLicence = {
     "postcode": "AB12CDE"
 }
 
-const updateLicence = {
-    "licenceId": licenceId,
-    "points": 3
-}
 
 const viaCreateLicenceHandler = async (event, functionName) => {
   const handler = require(`${APP_ROOT}/functions/${functionName}`).handler
   const response = await handler(event, {});
   const licence = JSON.parse(response.body);
-  updateLicence.licenceId = licence.licenceId;
-  console.log(`LicenceID: ${licenceId}`)
+  licenceId = licence.licenceId;
   return response;
 }
 
-const viaDuplicateLicenceHandler = async (event, functionName) => {
+const viaHandler = async (event, functionName) => {
     const handler = require(`${APP_ROOT}/functions/${functionName}`).handler
     const context = {}
-    const response = await handler(event, {});
-    return response;
-}
-
-const viaUpdateLicenceHandler = async (event, functionName) => {
-    const handler = require(`${APP_ROOT}/functions/${functionName}`).handler
-    console.log(event);
-    const context = {}
-    const response = await handler(event, {});
-    console.log(JSON.stringify(response));
+    const response = await handler(event, context);
     return response;
 }
 
@@ -45,17 +31,34 @@ const we_invoke_create_licence = () => viaCreateLicenceHandler({
     body: JSON.stringify(bicycleLicence)
 }, 'create-licence')
 
-const we_invoke_duplicate_licence = () => viaDuplicateLicenceHandler({
+const we_invoke_duplicate_licence = () => viaHandler({
     body: JSON.stringify(bicycleLicence)
 }, 'create-licence')
 
-const we_invoke_update_licence = () => viaUpdateLicenceHandler({
-    body: JSON.stringify(updateLicence)
+const we_invoke_update_licence = () => viaHandler({
+    body: JSON.stringify({
+        "licenceId": licenceId,
+        "points": 3
+    })
 }, 'update-licence')
 
+const we_invoke_get_licence = () => viaHandler({
+    pathParameters: {"licenceid": licenceId}
+}, 'get-licence')
+
+const we_invoke_history_licence = () => viaHandler({
+    pathParameters: {"licenceid": licenceId}
+}, 'get-licence-history')
+
+const we_invoke_delete_licence = () => viaHandler({
+    body: JSON.stringify({ "licenceId": licenceId })
+}, 'delete-licence')
 
 module.exports = {
   we_invoke_create_licence,
   we_invoke_duplicate_licence,
-  we_invoke_update_licence
+  we_invoke_update_licence,
+  we_invoke_get_licence,
+  we_invoke_history_licence,
+  we_invoke_delete_licence
 }
