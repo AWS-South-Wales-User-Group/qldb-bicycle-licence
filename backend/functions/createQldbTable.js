@@ -28,7 +28,7 @@ module.exports.handler = async (event, context) => {
         });
       } catch (e) {
         Log.error(`Unable to connect: ${e}`);
-        throw e;
+        await response.send(event, context, response.FAILED);
       }
       const responseData = { requestType: event.RequestType };
       await response.send(event, context, response.SUCCESS, responseData);
