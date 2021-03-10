@@ -4,6 +4,7 @@
   "description": "QLDB streams integration to DynamoDB",
   "main": "functions/qldb-streams-dynamodb.js",
   "scripts": {
+    "sls": "serverless",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Matt Lewis",
