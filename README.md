@@ -114,7 +114,7 @@ For more information about the `Streams ES` setup, see the individual [readme](/
 A `Serverless Artillery` setup has been configured to allow an initial data load to be carried out.
 
 ```bash
-cd loadtesting
+cd loadtest
 npm ci
 ```
 
