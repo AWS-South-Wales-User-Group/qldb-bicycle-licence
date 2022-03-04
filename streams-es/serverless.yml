@@ -45,7 +45,7 @@ functions:
           arn: !GetAtt licenceQldbStreamsES.Arn
     vpc:
       securityGroupIds:
-        - "Fn::GetAtt": ElasticSecurityGroup.GroupId
+        - !GetAtt ElasticSecurityGroup.GroupId
       subnetIds:
         - Ref: ElasticSubnetA
     iamRoleStatementsName: qldb-streams-es-lambda-role-${self:provider.stage}
@@ -87,7 +87,7 @@ functions:
           method: get
     vpc:
       securityGroupIds:
-        - "Fn::GetAtt": ElasticSecurityGroup.GroupId
+        - !GetAtt ElasticSecurityGroup.GroupId
       subnetIds:
         - Ref: ElasticSubnetA
     iamRoleStatementsName: es-search-role-${self:provider.stage}
