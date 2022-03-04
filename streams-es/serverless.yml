@@ -15,7 +15,7 @@ provider:
     restApiId: !ImportValue QldbApiGateway-restApiId
     restApiRootResourceId: !ImportValue QldbApiGateway-rootResourceId
   environment:
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED	: "1"
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
 
 plugins:
   - serverless-iam-roles-per-function
