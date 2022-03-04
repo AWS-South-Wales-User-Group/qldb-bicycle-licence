@@ -19,7 +19,7 @@ The first component to be deployed is the centralised `API Gateway`. This is use
 ``` bash
 cd apigateway
 npm ci
-npm run sls -- deploy --stage {stage-name}
+npm run sls -- deploy [--stage {stage-name}]
 ```
 
 For more information about the API Gateway setup, see the individual [readme](/apigateway) file.
